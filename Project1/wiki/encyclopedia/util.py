@@ -4,6 +4,8 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 
+
+
 def list_entries():
     """
     Returns a list of all names of encyclopedia entries.
@@ -35,3 +37,18 @@ def get_entry(title):
         return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+
+# If title exist return title as is writen in list_entries, else title is ""
+def match_title(title):
+        # Busca la entrada en la lista de entradas, si no encuentra title = ""
+    for correct_title in list_entries()+[""]:
+        if correct_title.lower() == title.lower():
+            title = correct_title
+            break
+    # Llego al final de la lista y no encontro
+    if correct_title == "":
+        incorrect_title = title
+        title = correct_title
+    else:
+        incorrect_title = ""
+    return title,incorrect_title
