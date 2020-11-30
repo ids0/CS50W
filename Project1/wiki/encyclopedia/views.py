@@ -1,7 +1,7 @@
 from django import forms
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-
+from random import choice
 from . import util
 
 # Form for new entry
@@ -106,6 +106,7 @@ def new(request):
             "form":NewEnty()
         })
 
+@implement_search
 def edit(request,title):
 
     # If editted succesfully
@@ -143,3 +144,8 @@ def edit(request,title):
             "title_error":True,
             "title":title
         })
+
+def random_entry(request):
+    entries = util.list_entries()
+    entry_selected = choice(entries)
+    return redirect('entry', title=entry_selected)
