@@ -1,7 +1,15 @@
+from django import forms
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 
 from . import util
+
+# Form for new entry
+class NewEnty(forms.Form):
+    entry_title = forms.CharField(label="Title",required=True)
+    entry_content = forms.CharField(widget=forms.Textarea,label="Content",required=True)
+
+
 
 # Decorator for search implementation, just for fun
 def implement_search(fun,*args,**kargs):
@@ -68,3 +76,39 @@ def entry(request,title):
     })
 
 
+def new(request):
+
+    # Si esta recibiendo el formulario
+    if request.method == "POST":
+
+        form = NewEnty(request.POST)
+        if form.is_valid():
+            entry_title = form.cleaned_data["entry_title"]
+            entry_content = form.cleaned_data["entry_content"]
+
+            # Comprueba si ya existe la entrada
+            if entry_title.lower() not in list( map( lambda list_entry: list_entry.lower(), util.list_entries() ) ):
+
+                # Crea archivo
+                with open(f"./entries/{entry_title}.md", 'w') as f:
+                    f.write(entry_content)
+
+                return render(request, "encyclopedia/new.html",{
+                    "form":form,
+                    "entry_added": True
+                 })
+            else:
+                # Avisa del error
+                return render(request, "encyclopedia/new.html",{
+                    "form":form,
+                    "title_error": True
+                })
+        else:
+            return redirect('new')
+
+    # Add new entry
+    else:
+        return render(request, "encyclopedia/new.html",{
+            "form":NewEnty()
+
+        })
