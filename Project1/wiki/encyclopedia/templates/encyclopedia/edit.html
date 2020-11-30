@@ -1,0 +1,26 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Encyclopedia
+{% endblock %}
+
+{% block body %}
+    <h1>Add New Page</h1>
+
+    {% if title_error %}
+        <h2>Entry doesn't exist</h2>
+
+
+
+    {% else %}
+    {{request.urlconf}}
+        <div class="form" style="height:500px;width:700px">
+            <form action="{% url 'edit' title %}" method="post">
+                {% csrf_token %}
+                {{form}}
+                <input type="submit">
+            </form>
+        </div>
+
+    {% endif %}
+{% endblock %}

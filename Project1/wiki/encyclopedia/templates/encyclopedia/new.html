@@ -15,7 +15,7 @@
         <h2>Entry Added!</h2>
     {% endif %}
 
-    <div class="form">
+    <div class="form" style="height:500px;width:700px">
         <form action="{% url 'new' %}" method="post">
             {% csrf_token %}
             {{form}}

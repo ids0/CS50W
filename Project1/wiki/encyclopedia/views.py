@@ -47,13 +47,6 @@ def implement_search(fun,*args,**kargs):
 
 @implement_search
 def index(request):
-    # # Search
-    # if 'q' in request.GET.keys():
-    #     title, user_search = util.match_title(request.GET['q'])
-    #     # Correct search
-    #     if title:
-    #         return redirect('entry', title=title)
-
 
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
@@ -76,6 +69,7 @@ def entry(request,title):
     })
 
 
+@implement_search
 def new(request):
 
     # Si esta recibiendo el formulario
@@ -86,7 +80,7 @@ def new(request):
             entry_title = form.cleaned_data["entry_title"]
             entry_content = form.cleaned_data["entry_content"]
 
-            # Comprueba si ya existe la entrada
+            # Comprueba que no exista la entrada
             if entry_title.lower() not in list( map( lambda list_entry: list_entry.lower(), util.list_entries() ) ):
 
                 # Crea archivo
@@ -110,5 +104,42 @@ def new(request):
     else:
         return render(request, "encyclopedia/new.html",{
             "form":NewEnty()
+        })
 
+def edit(request,title):
+
+    # If editted succesfully
+    if request.method == "POST":
+        form = NewEnty(request.POST)
+        if form.is_valid():
+            entry_title = form.cleaned_data["entry_title"]
+            entry_content = form.cleaned_data["entry_content"]
+
+            # Server checks
+            if entry_title.lower() in list( map( lambda list_entry: list_entry.lower(), util.list_entries() ) ):
+                # Acutaliza el contenido
+                with open(f"./entries/{entry_title}.md", 'w') as f:
+                    f.write(entry_content)
+
+                return redirect('entry', title=title)
+
+
+    # Check if entry exist
+    if title.lower() in list( map( lambda list_entry: list_entry.lower(), util.list_entries() ) ):
+         # Retrieve entry content
+        with open(f"./entries/{title}.md", 'r') as f:
+            content = f.read()
+
+        form = NewEnty(initial={'entry_title': title, 'entry_content': content})
+
+        return render(request, "encyclopedia/edit.html",{
+            "form":form,
+            "title":title
+        })
+
+    # If entry doesn't exist show error
+    else:
+        return render(request, "encyclopedia/edit.html",{
+            "title_error":True,
+            "title":title
         })
