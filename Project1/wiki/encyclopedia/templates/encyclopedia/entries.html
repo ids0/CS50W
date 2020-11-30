@@ -6,8 +6,8 @@
 
 {% block body %}
     {% if title != "" %}
-        <h1>{{ title }}</h1>
-        <div>{{ entry_content }}</div>
+        <!-- <h1>{{ title }}</h1> -->
+        <div>{{ entry_content |safe }}</div>
         <div><a href="{% url 'edit' title%}">Edit entry</a></div>
     {% else%}
         <h1>Page not found for {{ user_title }}</h1>

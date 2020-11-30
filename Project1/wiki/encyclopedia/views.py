@@ -1,8 +1,10 @@
 from django import forms
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from random import choice
+
 from . import util
+from random import choice
+import markdown2
 
 # Form for new entry
 class NewEnty(forms.Form):
@@ -65,7 +67,8 @@ def entry(request,title):
     return render(request, "encyclopedia/entries.html", {
         "title": title,
         "user_title": user_title,
-        "entry_content": util.get_entry(title)
+        "entry_content": markdown2.markdown(util.get_entry(title))
+        # "entry_content":util.get_entry(title)
     })
 
 
