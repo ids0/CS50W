@@ -1,0 +1,21 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+    <h1>{{ listing.title }}</h1>
+    <h2>{{ listing.description }}</h2>
+    <img src="{{listing.img_url}}">
+    <h3>Seller: {{ listing.user }}</h3>
+    {{ listing.time }}
+    {% if bid %}
+        <h2>Current bid: ${{ bid.amount }} from {{ bid.time }}</h2>
+    {% else %}
+        <h2>Initial bid: ${{ listing.initial_bid }}</h2>
+    {% endif %}
+
+    {% if request.user != listing.user %}
+        Make a bid
+        <form action="{% url 'listing' listing.id%}" method="POST">
+            
+        </form>
+    {%  endif %}
+
+{% endblock %}

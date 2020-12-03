@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+    <h1>Add a new item</h1>
+
+    <form action="{% url 'new' %}"  method="POST">
+        {% csrf_token %}
+        {% for form in forms %}
+            {{ form.name }}
+            {{ form }}
+
+        {% endfor %}
+        <input type="submit" name="Publish">
+    </form>
+
+{% endblock %}

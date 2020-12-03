@@ -1,10 +1,18 @@
+from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Listing, Bid, Comment
+
+from django.forms import ModelForm
+class NewListing(ModelForm):
+   class Meta:
+        model = Listing
+        fields = ['title','description','img_url','initial_bid']
+
 
 
 def index(request):
@@ -61,3 +69,41 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+
+def listing(request, listing_id):
+    listing = Listing.objects.get(id=listing_id)
+    bid = listing.bids.all().first()
+    return render(request, "auctions/listing.html",{
+        "listing":listing,
+        "bid":bid
+    })
+
+def new_listing(request):
+
+    if request.method == 'POST':
+        form = NewListing(request.POST)
+        if form.is_valid():
+            # user = request.user
+            # listing = Listing(user=user)
+            # form = NewListing(request.POST, instance=listing)
+            # form.save()
+            listing = form.save(commit=False)
+            listing.user = request.user
+            listing.save()
+            return HttpResponseRedirect(reverse("listing", args=[listing.id]))
+    
+    else:
+        forms = NewListing()
+
+        return render(request, "auctions/new_listing.html",{
+            "forms":forms
+        })
+
+
+    # test = Listing.objects.get(pk=1) #Edit
+    # forms =NewListing(instance=test)
+
+    # TODO: Make a bid in listing page
+    # TODO: Make a comment on listing page
+    # TODO: index.html
