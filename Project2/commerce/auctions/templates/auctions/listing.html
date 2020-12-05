@@ -11,11 +11,35 @@
         <h2>Initial bid: ${{ listing.initial_bid }}</h2>
     {% endif %}
 
-    {% if request.user != listing.user %}
-        Make a bid
-        <form action="{% url 'listing' listing.id%}" method="POST">
+
+    {% if user.is_authenticated %}
+
+        {% if request.user != listing.user %}
+            <h2>Make a bid</h2>
+            <form action="{% url 'listing' listing.id%}" method="POST">
+                {% csrf_token %}
+                {% for field in bid_form %}
+                    {{ field }}
+                {% endfor %}
+                <input type="submit" name="bid" value="Place a bid">
+            </form>
+        {%  endif %}
+            <h2>Comment</h2>
+            <form action="{% url 'listing' listing.id%}" method="POST">
+                {% csrf_token %}
+                {% for field in comment_form %}
+                    {{ field }}
+                {% endfor %}
+                <input type="submit" name="comment" value="Make a comment">
+            </form>
             
-        </form>
-    {%  endif %}
+            <h2>Add to watchlist</h2>
+            <form action="{% url 'listing' listing.id%}" method="POST">
+                {% csrf_token %}
+                {{ watchlist_form }}
+
+                <input type="submit" name="watchlist" value="Add to watchlist">
+            </form>
+    {% endif %}
 
 {% endblock %}

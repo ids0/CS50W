@@ -1,6 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+categories = [
+    ('Clothes', 'Clothes'),
+    ('Games', 'Games'),
+    ('Food', 'Food2'),
+]
 
 class User(AbstractUser):
     pass
@@ -8,7 +13,7 @@ class User(AbstractUser):
     def __str__(self):
         return f"{self.username}"
 
-
+# TODO: and watchlists
 
 class Listing(models.Model):
     title = models.CharField(max_length=32)
@@ -18,6 +23,7 @@ class Listing(models.Model):
     active = models.BooleanField(default=True) # Boolean
     time = models.DateTimeField(auto_now_add=True) # Time of when the listing was published
     initial_bid = models.DecimalField(max_digits=11, decimal_places=2, default=0)
+    category = models.CharField(max_length=16,choices=categories)
 
     def __str__(self):
         return f"Item: #{self.pk} - {self.title} from {self.user}"
@@ -30,7 +36,7 @@ class Bid(models.Model):
     time = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):
-        return f"Bid: #{self.pk} - {self.amount} for {self.listing}"
+        return f"Bid: #{self.pk} - {self.amount} for {self.listing} from {self.user}"
 
 class Comment(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="comments")
@@ -39,5 +45,12 @@ class Comment(models.Model):
     time = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f"Comment id: {self.pk} from {self.user} in {self.listing.title}"
+        return f"Comment id: {self.pk} from {self.user} in {self.listing.title} at {self.time}"
 
+class Watchlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist")
+    item = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    added = models.BooleanField(default=False)
+    def __str__(self):
+        return f"{self.item.title} in {self.user} watchlist"
+    

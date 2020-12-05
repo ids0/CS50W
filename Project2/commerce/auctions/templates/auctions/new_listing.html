@@ -2,7 +2,7 @@
 {% block body %}
     <h1>Add a new item</h1>
 
-    <form action="{% url 'new' %}"  method="POST">
+    <form action="{% url 'new_listing' %}"  method="POST">
         {% csrf_token %}
         {% for form in forms %}
             {{ form.name }}
