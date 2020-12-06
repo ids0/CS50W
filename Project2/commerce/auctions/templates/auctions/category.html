@@ -1,11 +1,13 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2>{{ category }}</h2>
 
-    {% for listing in listings %}
-        <div style="border: 1px solid black;" >
-            <a href="{% url 'listing' listing.id %}"><h1>{{ listing.title }}</h1></a>
+    {% for listing in category_items %}
+        <div style="border: 1px solid black;">
+            <a href="{% url 'listing' listing.id %}">
+                <h1>{{ listing.title }}</h1>
+            </a>
             <h2>{{ listing.description }}</h2>
             <img src="{{listing.img_url}}">
             {% if listing.bids.first  %}
@@ -14,8 +16,10 @@
                 <h3>Price: ${{ listing.initial_bid }}</h3>
             {% endif %}
 
-            <a href="{% url 'category' listing.category %}">{{ listing.category }}</a>
+            {{ listing.category }}
             <br>
         </div>
+    {% empty %}
+        Nothing in this category
     {% endfor %}
 {% endblock %}

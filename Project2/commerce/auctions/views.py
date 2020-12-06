@@ -215,6 +215,14 @@ def watchlist(request):
         "watchlist_items":watchlist_items
     })
 
+def category(request, category):
+    category_items = Listing.objects.filter(category=category)
+
+    return render(request, "auctions/category.html",{
+        "category":category,
+        "category_items": category_items
+    })
+
 # TODO: Bid constraints
-# Watchlist page
+
 # Categories page

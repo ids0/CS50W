@@ -4,7 +4,7 @@ from django.db import models
 categories = [
     ('Clothes', 'Clothes'),
     ('Games', 'Games'),
-    ('Food', 'Food2'),
+    ('Food', 'Food'),
 ]
 
 class User(AbstractUser):
