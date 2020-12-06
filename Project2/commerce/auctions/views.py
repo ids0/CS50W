@@ -15,6 +15,10 @@ class NewListing(ModelForm):
         model = Listing
         fields = ['title','description','img_url','initial_bid','category']
 
+class CloseListing(ModelForm):
+    class Meta:
+        model = Listing
+        fields = ['active']
 
 class NewBid(ModelForm):
     amount = forms.FloatField(min_value=0.00) 
@@ -34,7 +38,10 @@ class AddWatchlist(ModelForm):
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    listings = Listing.objects.all()
+    return render(request, "auctions/index.html",{
+        "listings":listings
+    })
 
 
 def login_view(request):
@@ -92,21 +99,22 @@ def register(request):
 def listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
     max_bid = listing.bids.all().order_by("amount").last()
-
-    if request.user.is_authenticated:
-        watchlist_status = Watchlist.objects.filter(user=request.user.id, item=listing_id).exists()
-    else:
-        watchlist_status = False
+    comments = Comment.objects.filter(listing=listing_id)
+    # if request.user.is_authenticated:
+    #     watchlist_status = Watchlist.objects.filter(user=request.user.id, item=listing_id).exists()
+    # else:
+    #     watchlist_status = False
 
     if request.method == 'POST':
         
         bid_form = NewBid(request.POST)
         comment_form = NewComment(request.POST)
         watchlist_form = AddWatchlist(request.POST)
-  
-        # TODO: Why XX.01 is not valid
-        if bid_form.is_valid():
+        close_listing_form = CloseListing(request.POST)
+
+        if bid_form.is_valid() and request.POST.get('bid'):
             # Check if bid is new max bid
+            # TODO: Why XX.01 is not valid
             print(float(max_bid.amount),float(bid_form.cleaned_data['amount']))
             if float(max_bid.amount) < float(bid_form.cleaned_data['amount']):
                 # Save new bid
@@ -124,7 +132,7 @@ def listing(request, listing_id):
                 # Show error
                 return HttpResponseRedirect(reverse("listing", args=[listing_id]))
 
-        elif comment_form.is_valid():
+        elif comment_form.is_valid() and request.POST.get('comment'):
             comment = comment_form.save(commit=False)
             comment.user = request.user
             comment.listing = listing
@@ -132,28 +140,47 @@ def listing(request, listing_id):
             # Show comment success 
             return HttpResponseRedirect(reverse("listing", args=[listing_id]))
 
-        elif watchlist_form.is_valid():
-            watchlist = watchlist_form.save(commit=False)
-            watchlist.user = request.user
-            watchlist.item = listing
+        elif watchlist_form.is_valid() and request.POST.get('watchlist'):
+            # Form data
+            watchlist_form = watchlist_form.save(commit=False)
+            # Create or update entry
+            watchlist = Watchlist.objects.get_or_create(user=request.user,item=listing)[0]
+            watchlist.added = watchlist_form.added
             watchlist.save()
-            # Show watchlist success 
+            # Show watchlist success
             return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+
+        elif request.user.is_authenticated and request.user == listing.user:
+            
+            if close_listing_form.is_valid():
+    
+                listing.active = close_listing_form.save(commit=False).active
+                listing.save()
+                return HttpResponseRedirect(reverse("listing", args=[listing_id]))            
         else:
             return HttpResponseRedirect(reverse("listing", args=[listing_id]))
 
     else:
-        bid_form = NewBid()
+        bid_form = NewBid(instance=max_bid)
         comment_form = NewComment()
         watchlist_form = AddWatchlist()
-        # TODO: Fix behaviour of watchlist, if already is, only one copy, etc.
+        close_listing_form=CloseListing()
+        if request.user.is_authenticated :
+            if Watchlist.objects.filter(user=request.user.id).exists() :
+                watchlist_form = AddWatchlist(instance=Watchlist.objects.filter(user=request.user.id).last())
+
+            if request.user == listing.user:
+                close_listing_form=CloseListing(instance=listing)
+
+
         return render(request, "auctions/listing.html",{
             "listing":listing,
             "bid":max_bid,
             "bid_form":bid_form,
             "comment_form":comment_form,
             "watchlist_form":watchlist_form,
-            "watchlist_status":watchlist_status
+            "close_listing_form":close_listing_form,
+            "comments":comments
         })
 
 def new_listing(request):
@@ -181,6 +208,13 @@ def new_listing(request):
     # test = Listing.objects.get(pk=1) #Edit
     # forms =NewListing(instance=test)
 
-    # TODO: Make a bid in listing page
-    # TODO: Make a comment on listing page
-    # TODO: index.html
+def watchlist(request):
+    watchlist_items = Watchlist.objects.filter(user=request.user)
+    print(watchlist_items)
+    return render(request, "auctions/watchlist.html",{
+        "watchlist_items":watchlist_items
+    })
+
+# TODO: Bid constraints
+# Watchlist page
+# Categories page

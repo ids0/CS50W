@@ -1,0 +1,25 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>On watchlist</h2>
+
+    {% for listing in watchlist_items %}
+        <div style="border: 1px solid black;">
+            <a href="{% url 'listing' listing.id %}">
+                <h1>{{ listing.item.title }}</h1>
+            </a>
+            <h2>{{ listing.description }}</h2>
+            <img src="{{listing.item.img_url}}">
+            {% if listing.item.bids.first  %}
+                <h3>Price: ${{ listing.item.bids.first.amount }}</h3>
+            {% else %}
+                <h3>Price: ${{ listing.item.initial_bid }}</h3>
+            {% endif %}
+
+            {{ listing.item.category }}
+            <br>
+        </div>
+    {% empty %}
+        Add something to your watchlist
+    {% endfor %}
+{% endblock %}

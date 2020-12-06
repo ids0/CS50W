@@ -24,7 +24,7 @@ class Listing(models.Model):
     time = models.DateTimeField(auto_now_add=True) # Time of when the listing was published
     initial_bid = models.DecimalField(max_digits=11, decimal_places=2, default=0)
     category = models.CharField(max_length=16,choices=categories)
-
+    
     def __str__(self):
         return f"Item: #{self.pk} - {self.title} from {self.user}"
     # Posible adds, another class for bid history, time of closing, etc.
@@ -51,6 +51,10 @@ class Watchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist")
     item = models.ForeignKey(Listing, on_delete=models.CASCADE)
     added = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'item',)
+
     def __str__(self):
-        return f"{self.item.title} in {self.user} watchlist"
+        return f"{self.pk}: {self.item.title} in {self.user} watchlist"
     
