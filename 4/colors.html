@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script>
+        function change_color(color,id) {
+            document.querySelector(`#${color}`).onclick = function(){
+                document.querySelector(`#${id}`).style.color = color;
+            };
+
+        };
+
+        document.addEventListener("DOMContentLoaded", function(){
+            const colors = ['red','green','blue'];
+            for (let i=0;i<colors.length;i++) {
+                change_color(colors[i],'hello');
+            }
+
+        });
+    </script>
+</head>
+<body>
+    <h1 id='hello'>Hello</h1>
+    <button id="red">Red</button>
+    <button id="blue">Blue</button>
+    <button id="green">Green</button>
+</body>
+</html>

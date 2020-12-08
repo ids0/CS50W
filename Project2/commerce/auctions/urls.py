@@ -12,3 +12,8 @@ urlpatterns = [
     path("watchlist", views.watchlist, name="watchlist"),
     path("<str:category>", views.category, name="category")
 ]
+
+# items = ['Games', 'Food']
+
+# for item in items:
+#     urlpatterns.append(path(f"<str:{item}>",views.category, name="category"))

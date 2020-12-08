@@ -1,10 +1,10 @@
 from django import forms
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
 from .models import User, Listing, Bid, Comment, Watchlist
 
 from django.forms import ModelForm
@@ -183,6 +183,7 @@ def listing(request, listing_id):
             "comments":comments
         })
 
+@login_required
 def new_listing(request):
 
     if request.method == 'POST':
@@ -208,6 +209,7 @@ def new_listing(request):
     # test = Listing.objects.get(pk=1) #Edit
     # forms =NewListing(instance=test)
 
+@login_required
 def watchlist(request):
     watchlist_items = Watchlist.objects.filter(user=request.user)
     print(watchlist_items)
@@ -224,5 +226,3 @@ def category(request, category):
     })
 
 # TODO: Bid constraints
-
-# Categories page
