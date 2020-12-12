@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scroll</title>
+    <script type="text/javascript">
+        // 100 lines
+        document.addEventListener("DOMContentLoaded",function() {
+            const body = document.querySelector('body')
+            for (let i = 1; i <= 100; i++){
+                const p = document.createElement("p");
+                p.innerHTML = i;
+                body.appendChild(p);
+            }
+        });
+        window.onscroll = () => {
+            let hexScroll = window.scrollY.toString(16);
+            hexScroll = `#F0F${hexScroll}`;
+            document.querySelector('body').style.background = hexScroll;
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight){
+                document.querySelector('body').style.background = '#F0F8FF';
+            } else {
+                // document.querySelector('body').style.background = 'white';
+            }
+
+            console.log(hexScroll);
+        };
+
+    </script>
+</head>
+<body>
+</body>
+</html>
