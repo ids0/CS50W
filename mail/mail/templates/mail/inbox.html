@@ -3,7 +3,6 @@
 
 {% block body %}
     <h2>{{ request.user.email }}</h2>
-
     <button class="btn btn-sm btn-outline-primary" id="inbox">Inbox</button>
     <button class="btn btn-sm btn-outline-primary" id="compose">Compose</button>
     <button class="btn btn-sm btn-outline-primary" id="sent">Sent</button>
@@ -27,7 +26,7 @@
                 <input class="form-control" id="compose-subject" placeholder="Subject">
             </div>
             <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
-            <input type="submit" class="btn btn-primary"/>
+            <input type="submit" id="send-email" class="btn btn-primary"/>
         </form>
     </div>
 {% endblock %}
