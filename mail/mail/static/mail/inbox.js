@@ -77,8 +77,6 @@ function load_mailbox(mailbox) {
     emails.forEach((email)=>{
       // Create element
       const div = document.createElement("div");
-      div.className = 'email'
-
       if (email.read){
         // Read
         div.className = 'list-group-item list-group-item-secondary'
@@ -87,8 +85,7 @@ function load_mailbox(mailbox) {
         div.className = 'list-group-item list-group-item-light'
       }
 
-
-
+      // Text to show
       div.innerHTML = `<b>${email.sender}</b>  ${email.subject} <span class="text-right badge badge-primary badge-pill">${email.timestamp}</span>`;
 
       // Add EvenListener
@@ -111,7 +108,6 @@ function show_email(email) {
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#email-view').style.display = 'block';
-
   // Clear old emails
   document.querySelector('#email-view').innerHTML = '';
 
@@ -123,6 +119,42 @@ function show_email(email) {
     })
   });
 
+  //Update local status
+  email.read = true;
+
+  // Archive 
+  const button = document.createElement('button')
+  if (email.archived) {
+    button.className = "btn btn-info";
+    button.innerHTML = "Unarchive";
+  } else {
+    button.className = "btn btn-dark";
+    button.innerHTML = "Archive";
+  }
+  button.addEventListener('click',function(){
+
+    fetch(`emails/${email.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        archived: !email.archived
+      })
+    });
+
+    // Show alert and change style onclick
+    if (!email.archived) {
+      showAlert('Email Archive correctly', 'success', '#email-view');
+      button.className = "btn btn-info";
+      button.innerHTML = "Unarchive";
+    } else {
+      showAlert('Email Unarchive correctly', 'success', '#email-view');
+      button.className = "btn btn-dark";
+      button.innerHTML = "Archive";
+    }
+    // Update local status
+    email.archived = !email.archived;
+  });
+
+  
   // Clean this
   console.log(email);
   let div = document.createElement("div");
@@ -138,9 +170,10 @@ function show_email(email) {
   div.innerHTML = `<b>Timestamp:</b> ${email.timestamp}`;
   document.querySelector('#email-view').appendChild(div);
   div = document.createElement("div");
+  document.querySelector('#email-view').appendChild(button);
   div.innerHTML = `<hr>${email.body}`;
   document.querySelector('#email-view').appendChild(div);
-  
+
 }
 
 
