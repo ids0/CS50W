@@ -25,7 +25,6 @@ function compose_email(email={}) {
   // If email is a response
   if (email != {}){
     if (email.sender.length > 0){
-      console.log(email);
       document.querySelector('#compose-recipients').value = email.sender;
       if (email.subject.slice(0, 3).toUpperCase() === "Re:".toUpperCase()){
         document.querySelector('#compose-subject').value = `${email.subject}`;
