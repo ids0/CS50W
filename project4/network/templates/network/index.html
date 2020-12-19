@@ -1,5 +1,26 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
-    TODO
+    <h1>All post</h1>
+    <!-- TODO: New post -->
+    <div id="new-post">
+        <h2>New Post</h2>
+        <form id="new-post-form">
+            <script>
+                // CSRF Token for fetch request
+                var CSRF_TOKEN = '{{ csrf_token }}';
+            </script>
+            <textarea id='post-body' placeholder="New Post!"></textarea>
+            
+            <input type="submit" id="make-post" />
+        </form>
+        
+    </div>
+    <!-- TODO: Olther post, one empty to populate with new post -->
+    <div id="recent-post"></div>
+    <div id="posts"></div>
+
+    <script src="{% static 'network/post.js' %}"></script>
 {% endblock %}
+
