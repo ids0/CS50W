@@ -1,0 +1,23 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h1>Following post</h1>
+    <!-- Older post, one empty to populate with new post -->
+    <div id="recent-post"></div>
+    <div id="posts"></div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" id="previous-page" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" id="next-page" href="#">Next</a></li>
+        </ul>
+    </nav>
+    
+    <script src="{% static 'network/following.js' %}"></script>
+    <script>
+        const username = '{{ username }}';
+        const CSRF_TOKEN = '{{ csrf_token }}';
+    </script>
+{% endblock %}

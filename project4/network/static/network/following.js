@@ -1,45 +1,5 @@
-document.addEventListener('DOMContentLoaded', function() {
-    //Post button
-    document.querySelector('#new-post-form').onsubmit = function(){
-        // Get post body from form
-        post_body = document.querySelector('#post-body').value;
-
-        // Create request with CSRF Token in header
-        const request = new Request(
-            '/post',
-            { headers: { 'X-CSRFToken': CSRF_TOKEN } }
-        );
-        // TODO: Error handling
-        // POST request to server with request
-        fetch(request, {
-            method:'POST',
-            mode: 'same-origin',
-            body:JSON.stringify({
-                body:post_body
-            })
-        })
-        .then(response => response.json())
-        .then(result => {
-            console.log(result);
-
-            // TODO: Update this Show post locally
-            // Maybe fetch post from server?
-
-
-            // Create new card
-            div = newPost(post_body);
-
-            let new_post = document.querySelector('#recent-post');
-            new_post.prepend(div);
-
-            // TODO: Animation
-
-            // Clear post
-            document.querySelector('#post-body').value = '';
-        });
-            
-        return false;
-    };
+document.addEventListener('DOMContentLoaded', function () {
+    
 
     let actual_page = 1;
 
@@ -47,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadPosts(actual_page);
 
     // Previous / Next Buttons
-    document.querySelector('#next-page').onclick = function(){
+    document.querySelector('#next-page').onclick = function () {
         actual_page++;
         loadPosts(actual_page);
 
@@ -56,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.querySelector('#previous-page').onclick = function () {
         actual_page--;
-        if (actual_page <= 0){
+        if (actual_page <= 0) {
             actual_page = 1;
         }
         loadPosts(actual_page);
@@ -67,14 +27,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function loadPosts(page_number) {
-
     // Clear old posts
     document.querySelector('#posts').innerHTML = '';
 
     // Load posts
-    fetch(`/post/${page_number}`)
+    fetch(`/following_post/${page_number}`)
         .then(response => response.json())
         .then(response_object => {
+
             // Prev/Nex buttons
             if (page_number === 1) {
                 document.querySelector('#previous-page').parentElement.classList.add("disabled");
@@ -88,9 +48,11 @@ function loadPosts(page_number) {
                 document.querySelector('#next-page').parentElement.classList.remove("disabled");
             }
 
+
             response_object.posts.forEach(post => {
                 div = postDiv(post);
 
+                console.log(post);
 
                 const new_post = document.querySelector('#posts');
                 new_post.append(div);
@@ -99,19 +61,6 @@ function loadPosts(page_number) {
     return true;
 }
 
-function newPost(body) {
-
-    // Create post object for postDiv
-    const post = {
-        id:-1,
-        user: current_user,
-        time:"Now",
-        body:body,
-        likes:0,
-    };
-
-    return postDiv(post);
-}
 
 function postDiv(post) {
     const div = document.createElement('div');
@@ -124,7 +73,6 @@ function postDiv(post) {
 
     // Post's body
     const body_element = document.createElement('p');
-    body_element.id = "posts-body"
     body_element.className = 'card-text'
     body_element.innerHTML = post.body;
     card_body.appendChild(body_element);
@@ -139,26 +87,23 @@ function postDiv(post) {
         like_element.innerHTML = post.likes;
     }
 
-    like_element.onclick =  function () {
+    like_element.onclick = function () {
         // If user is not post owned
-        if (!post.owned){
-            // Change local state
+        if (!post.owned) {
             post.liked = !post.liked;
-            // Request with token
             const request = new Request(
                 '/post',
                 { headers: { 'X-CSRFToken': CSRF_TOKEN } }
             );
-            // PUT request with updated status
+
             fetch(request, {
                 method: 'PUT',
                 body: JSON.stringify({
-                    reason: 'Like',
                     id: post.id,
                     liked: post.liked
                 })
             });
-            // Change local info
+
             if (post.liked) {
                 post.likes++;
                 like_element.innerHTML = `♥ : ${post.likes}`;
@@ -185,6 +130,7 @@ function postDiv(post) {
     card_body.appendChild(time_element);
 
     // Edit
+    console.log(post);
     if (post.owned) {
         const edit_element = document.createElement('a');
         edit_element.innerHTML = "edit";
@@ -224,7 +170,7 @@ function postDiv(post) {
                 fetch(request, {
                     method: 'PUT',
                     body: JSON.stringify({
-                        reason:'Update',
+                        reason: 'Update',
                         id: post.id,
                         body: post_body
                     })
@@ -242,11 +188,8 @@ function postDiv(post) {
         }
         card_body.appendChild(edit_element);
     }
-    
-
 
     div.appendChild(card_body);
 
     return div;
 }
-

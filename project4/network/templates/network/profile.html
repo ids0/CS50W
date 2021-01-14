@@ -1,0 +1,30 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h1>{{ username }}</h1>
+    <div id='profile-info'>
+        <button id='followers' class="btn btn-primary"></button>
+        <button id='following' class="btn btn-primary"></button>
+    {% if user.is_authenticated %}
+        <button id='follow-button' class="btn btn-success">Follow</button>
+    {% endif %}
+    </div>
+
+    <!-- Older post, one empty to populate with new post -->
+    <div id="recent-post"></div>
+    <div id="posts"></div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" id="previous-page" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" id="next-page" href="#">Next</a></li>
+        </ul>
+    </nav>
+    <script src="{% static 'network/profile.js' %}"></script>
+    <script>
+        const username = '{{ username }}';
+        const CSRF_TOKEN = '{{ csrf_token }}';
+    </script>
+{% endblock %}

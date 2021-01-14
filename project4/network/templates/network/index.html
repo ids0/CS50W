@@ -3,13 +3,14 @@
 
 {% block body %}
     <h1>All post</h1>
-    <!-- TODO: New post -->
+    <!-- New post -->
     <div id="new-post">
         <h2>New Post</h2>
         <form id="new-post-form">
             <script>
                 // CSRF Token for fetch request
-                var CSRF_TOKEN = '{{ csrf_token }}';
+                const CSRF_TOKEN = '{{ csrf_token }}';
+                const current_user = '{{ request.user }}';
             </script>
             <textarea id='post-body' placeholder="New Post!"></textarea>
             
@@ -17,9 +18,17 @@
         </form>
         
     </div>
-    <!-- TODO: Olther post, one empty to populate with new post -->
+    <!-- Older post, one empty to populate with new post -->
     <div id="recent-post"></div>
     <div id="posts"></div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" id="previous-page" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" id="next-page" href="#">Next</a></li>
+        </ul>
+    </nav>
 
     <script src="{% static 'network/post.js' %}"></script>
 {% endblock %}
